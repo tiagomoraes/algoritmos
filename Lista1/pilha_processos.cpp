@@ -169,14 +169,21 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    int m;
+    cin >> m;
+
     // array of int containing the magistrados(i) and hours
+    int arrMagistrados[m];
+    for(int i = 0; i < m; i++) {
+        cin >> arrMagistrados[i];
+    }
 
-
+    // loop for distributing the processos between the magistrados
     while (cont < numProcessos) {
-
-      if(cont == numEmpresas-1) {
-        cont = 0;
-      }
+    
+        if(cont == numEmpresas-1) {
+            cont = 0;
+        }
     }
 
 
