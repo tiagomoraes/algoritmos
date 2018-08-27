@@ -151,10 +151,11 @@ int main(int argc, char *argv[]) {
 
     Fila *arrFilas[numEmpresas];
 
+    int numProcessos;
+
     for(int i = 0; i < numEmpresas; i++) {
         arrFilas[i] = new Fila();
 
-        int numProcessos;
         cin >> numProcessos;
 
         for(int j = 0; j < numProcessos; j++) {
@@ -166,6 +167,16 @@ int main(int argc, char *argv[]) {
 
             arrFilas[i]->insert_tail(p);
         }
+    }
+
+    // array of int containing the magistrados(i) and hours
+
+
+    while (cont < numProcessos) {
+
+      if(cont == numEmpresas-1) {
+        cont = 0;
+      }
     }
 
 
