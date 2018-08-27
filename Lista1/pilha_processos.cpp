@@ -77,7 +77,7 @@ struct Pilha {
     void print() {
         nodePtr cur;
         cur = this->head;
-       nodePtr aux;
+        nodePtr aux;
         while(cur != nullptr) {
             cout << "M:" << cur->val->magistrado << endl;
             cout << "T:" << cur->val->tempo << endl;
@@ -95,7 +95,7 @@ struct Fila {
     nodePtr cur;
 
     // constructor for the class
-    Pilha() {
+    Fila() {
         head = nullptr;
         tail = nullptr;
         cur = nullptr;
@@ -140,7 +140,7 @@ struct Fila {
             cur = cur->next;
         }
     }
-}
+};
 
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
@@ -149,15 +149,30 @@ int main(int argc, char *argv[]) {
     int numEmpresas;
     cin >> numEmpresas;
 
-    List arrFilas[numEmpresas];
+    Fila *arrFilas[numEmpresas];
 
     for(int i = 0; i < numEmpresas; i++) {
+        arrFilas[i] = new Fila();
+
         int numProcessos;
         cin >> numProcessos;
+
         for(int j = 0; j < numProcessos; j++) {
-            int
+            int magistrado, tempo;
+            cin >> magistrado;
+            cin >> tempo;
+
+            processo *p = new processo(magistrado, tempo);
+
+            arrFilas[i]->insert_tail(p);
         }
     }
+
+
+    for(int i = 0; i < numEmpresas; i++) {
+        arrFilas[i]->print();
+    }
+
 
     return 0;
 }
