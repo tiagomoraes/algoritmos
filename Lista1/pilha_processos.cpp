@@ -5,12 +5,14 @@ using namespace std;
 
 //PROCESSO STRUCT
 struct processo {
-    int magistradoPref, tempo;
+    int magistradoPref, tempo, empresa, pos;
 
     // constructor for struct processo
-    processo(int magistradoPref, int tempo) {
+    processo(int magistradoPref, int tempo, int empresa, int pos) {
         this->magistradoPref = magistradoPref;
         this->tempo = tempo;
+        this->empresa = empresa;
+        this->pos = pos;
     }
 };
 
@@ -84,7 +86,7 @@ struct Pilha {
         while(cur != nullptr) {
             cout << "Processo" << endl;
             cout << "M:" << cur->val->magistradoPref << endl;
-            cout << "T:" << cur->val->tempo << endl << endl;
+            cout << "T:" << cur->val->tempo << endl;
             cur = cur->next;
         }
     }
@@ -160,14 +162,27 @@ struct Fila {
 //MAGISTRADO STRUCT
 struct magistrado {
     Pilha *pilha;
-    int horasDia;
+    int horasDia, horasRestantes;
 
     magistrado(int horasDia) {
         this->horasDia = horasDia;
+        this->horasRestantes = horasDia;
         this->pilha = new Pilha();
     }
 };
 
+void concat(Pilha *baixo, Pilha *cima) {
+    if(cima->length() > 0 && baixo->length() > 0) {
+        baixo->head->prev = cima->tail;
+        cima->tail->next = baixo->head;
+        baixo->head = cima->head;
+    } else if(cima->length() > 0) {
+        baixo->head = cima->head;
+        baixo->tail = cima->tail;
+    }
+}
+
+// MAIN
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -189,7 +204,7 @@ int main(int argc, char *argv[]) {
             cin >> magistradoPref;
             cin >> tempoNec;
 
-            processo *p = new processo(magistradoPref, tempoNec);
+            processo *p = new processo(magistradoPref, tempoNec, i, j);
 
             arrFilas[i]->insert_tail(p);
         }
@@ -239,190 +254,58 @@ int main(int argc, char *argv[]) {
         }
     }
 
-
+    // assistentes get their bosses processos
     for(int i = 0; i < m; i++) {
-        arrMagistrados[i]->pilha->print();
-    }
-
-    return 0;
-}
-
-
-/*
-//PROCESSO STRUCT
-struct Processo {
-    int magistrado, tempo;
-
-    // constructor for struct processo
-    Processo(int magistrado, int tempo) {
-        this->magistrado = magistrado;
-        this->tempo = tempo;
-    }
-}
-
-// PILHA STRUCT
-struct Pilha {
-    struct node {
-
-        processo val;
-        node *prev;
-        node *next;
-
-        // constructor for struct node
-        node(processo *val) : val(val), prev(nullptr), next(nullptr) {}
-    };
-
-    // defines a node* as nodePtr for easy use
-    typedef struct node* nodePtr;
-
-    int size;
-
-    nodePtr head;
-    nodePtr tail;
-    nodePtr cur;
-    nodePtr aux;
-
-    // constructor for the class
-    Pilha() {
-        head = nullptr;
-        tail = nullptr;
-        cur = nullptr;
-        size = 0;
-    }
-
-    // inserts new node on the head
-    void insert_head(processo *val) {
-        nodePtr n;
-        n = new node(val);
-
-        // check if list is empty
-        if(this->head == nullptr) {
-            this->tail = n;
-        } else {
-            this->head->prev = n;
-            n->next = this->head;
-        }
-        this->head = n;
-
-        this->size++;
-    }
-
-    bool remove_head() {
-        if(this->head != nullptr) {
-            this->head->next->prev = nullptr;
-            this->head = this->head->next;
-            this->size--
-            return true;
-        } else {
-            return false;
+        for(int j = 0; j < m; j++) {
+            if(i != j) {
+                Pilha *assPilhaCerta = new Pilha();
+                Pilha *assPilhaOutro = new Pilha();
+                while(arrMagistrados[i]->pilha->head != nullptr) {
+                    processo *p = arrMagistrados[i]->pilha->remove_head();
+                    if(p->magistradoPref == j) {
+                        assPilhaCerta->insert_head(p);
+                    } else {
+                        assPilhaOutro->insert_head(p);
+                    }
+                }
+                arrMagistrados[i]->pilha = assPilhaOutro;
+                concat(arrMagistrados[j]->pilha, assPilhaCerta);
+            }
         }
     }
 
-    void print() {
-        nodePtr cur;
-        cur = this->head;
-
-        while(cur != nullptr) {
-            cout << "M:" << cur->val->magistrado << endl;
-            cout << "T:" << cur->val->tempo << endl;
-
+    // change the -1s
+    for(int i = 0; i < m; i++) {
+        nodePtr cur = arrMagistrados[i]->pilha->head;
+        while (cur != nullptr) {
+            cur->val->magistradoPref = i;
             cur = cur->next;
         }
     }
+    int i = totalProcessos;
 
-    // inserts new node on the tail
-    void insert_tail(processo *val) {
-        nodePtr n;
-        n = new node(val);
+    while(i > 0) {
+        for(int j = 0; j < 24; j++) {
+            for(int k = 0; k < m; k++) {
+                if(arrMagistrados[k]->pilha->head != nullptr) {
+                    if(arrMagistrados[k]->horasRestantes > 0) {
+                        arrMagistrados[k]->horasRestantes--;
+                        arrMagistrados[k]->pilha->head->val->tempo--;
 
-        // check if list is empty
-        if(this->tail == nullptr) {
-            this->head = n;
-        } else {
-            this->tail->next = n;
-            n->prev = this->tail;
-        }
-        this->tail = n;
-
-        this->size++;
-    }
-
-
-
-
-    bool remove_tail() {
-        if(this->tail != nullptr) {
-            this->tail->prev->next = nullptr;
-            this->tail = this->tail->prev;
-            this->size--;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    bool list_removeOne(processo val) {
-
-        nodePtr cur;
-        cur = head;
-
-        //goes until the end of the list
-        while (cur != nullptr) {
-            if(cur->val == val) {
-
-                // check if the elemnt is the first
-                if(cur->prev != nullptr) {
-                    cur->prev->next = cur->next;
-                } else {
-                    this->head = cur->next;
+                        if(arrMagistrados[k]->pilha->head->val->tempo <= 0) {
+                            cout << arrMagistrados[k]->pilha->head->val->magistradoPref << " ";
+                            cout << arrMagistrados[k]->pilha->head->val->empresa << " ";
+                            cout << arrMagistrados[k]->pilha->head->val->pos << endl;
+                            arrMagistrados[k]->pilha->remove_head();
+                            i--;
+                        }
+                    }
                 }
-
-                // check if the elemnt is the last
-                if(cur->next != nullptr) {
-                    cur->next->prev = cur->prev;
-                } else {
-                    this->tail = cur->prev;
-                }
-
-                delete cur;
-                this->size--;
-                return true;
             }
         }
-        return false;
-    }
-
-    // remove all elements that have some value and returnes how many removed
-    int list_removeAll(processo val) {
-        int removed = 0;
-
-        nodePtr cur;
-        cur = head;
-
-        //goes until the end of the list
-        while (cur != nullptr) {
-            if(cur->val == val) {
-
-                // check if the elemnt is the first
-                if(cur->prev != nullptr) {
-                    cur->prev->next = cur->next;
-                } else {
-                    this->head = cur->next;
-                }
-
-                // check if the elemnt is the last
-                if(cur->next != nullptr) {
-                    cur->next->prev = cur->prev;
-                } else {
-                    this->tail = cur->prev;
-                }
-
-                delete cur;
-                this->size--;
-                removed++;
-            }
+        for(int j = 0; j < m; j++) {
+            arrMagistrados[j]->horasRestantes = arrMagistrados[j]->horasDia;
         }
-        return removed;
     }
-};
-*/
+    return 0;
+}
