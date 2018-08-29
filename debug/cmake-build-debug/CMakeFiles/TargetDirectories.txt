@@ -1,0 +1,3 @@
+/home/tiago/UFPE/Algoritmos - IF672cc/algoritmos/debug/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/tiago/UFPE/Algoritmos - IF672cc/algoritmos/debug/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/tiago/UFPE/Algoritmos - IF672cc/algoritmos/debug/cmake-build-debug/CMakeFiles/debug.dir
