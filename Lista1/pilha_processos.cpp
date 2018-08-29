@@ -5,11 +5,11 @@ using namespace std;
 
 //PROCESSO STRUCT
 struct processo {
-    int magistrado, tempo;
+    int magistradoPref, tempo;
 
     // constructor for struct processo
-    processo(int magistrado, int tempo) {
-        this->magistrado = magistrado;
+    processo(int magistradoPref, int tempo) {
+        this->magistradoPref = magistradoPref;
         this->tempo = tempo;
     }
 };
@@ -63,14 +63,17 @@ struct Pilha {
         this->size++;
     }
 
-    bool remove_head() {
+    processo* remove_head() {
         if(this->head != nullptr) {
-            this->head->next->prev = nullptr;
+            processo *p = this->head->val;
+            if(this->head->next != nullptr) {
+                this->head->next->prev = nullptr;
+            }
             this->head = this->head->next;
             this->size--;
-            return true;
+            return p;
         } else {
-            return false;
+            return nullptr;
         }
     }
 
@@ -79,10 +82,15 @@ struct Pilha {
         cur = this->head;
         nodePtr aux;
         while(cur != nullptr) {
-            cout << "M:" << cur->val->magistrado << endl;
-            cout << "T:" << cur->val->tempo << endl;
+            cout << "Processo" << endl;
+            cout << "M:" << cur->val->magistradoPref << endl;
+            cout << "T:" << cur->val->tempo << endl << endl;
             cur = cur->next;
         }
+    }
+
+    int length() {
+        return this->size;
     }
 };
 
@@ -119,14 +127,17 @@ struct Fila {
         this->size++;
     }
 
-    bool remove_head() {
+    processo* remove_head() {
         if(this->head != nullptr) {
-            this->head->next->prev = nullptr;
+            processo *p = this->head->val;
+            if(this->head->next != nullptr) {
+                this->head->next->prev = nullptr;
+            }
             this->head = this->head->next;
             this->size--;
-            return true;
+            return p;
         } else {
-            return false;
+            return nullptr;
         }
     }
 
@@ -135,10 +146,25 @@ struct Fila {
         cur = this->head;
        nodePtr aux;
         while(cur != nullptr) {
-            cout << "M:" << cur->val->magistrado << endl;
+            cout << "M:" << cur->val->magistradoPref << endl;
             cout << "T:" << cur->val->tempo << endl;
             cur = cur->next;
         }
+    }
+
+    int length() {
+        return this->size;
+    }
+};
+
+//MAGISTRADO STRUCT
+struct magistrado {
+    Pilha *pilha;
+    int horasDia;
+
+    magistrado(int horasDia) {
+        this->horasDia = horasDia;
+        this->pilha = new Pilha();
     }
 };
 
@@ -159,11 +185,11 @@ int main(int argc, char *argv[]) {
         cin >> numProcessos;
 
         for(int j = 0; j < numProcessos; j++) {
-            int magistrado, tempo;
-            cin >> magistrado;
-            cin >> tempo;
+            int magistradoPref, tempoNec;
+            cin >> magistradoPref;
+            cin >> tempoNec;
 
-            processo *p = new processo(magistrado, tempo);
+            processo *p = new processo(magistradoPref, tempoNec);
 
             arrFilas[i]->insert_tail(p);
         }
@@ -173,24 +199,50 @@ int main(int argc, char *argv[]) {
     cin >> m;
 
     // array of int containing the magistrados(i) and hours
-    int arrMagistrados[m];
+    magistrado *arrMagistrados[m];
     for(int i = 0; i < m; i++) {
-        cin >> arrMagistrados[i];
+        int horasDia;
+        cin >> horasDia;
+        arrMagistrados[i] = new magistrado(horasDia);
     }
 
+    int totalProcessos = 0;
+    for(int i = 0; i < numEmpresas; i++) {
+        totalProcessos += arrFilas[i]->length();
+    }
+
+
+    int cont1 = 0;
+    int cont2 = 0;
     // loop for distributing the processos between the magistrados
-    while (cont < numProcessos) {
-    
-        if(cont == numEmpresas-1) {
-            cont = 0;
+    for(int i = 0; i < totalProcessos; i++) {
+        while(arrFilas[cont1]->length() <= 0) {
+            if(cont1 == numEmpresas-1) {
+                cont1 = 0;
+            } else {
+                cont1++;
+            }
+        }
+        processo *p = arrFilas[cont1]->remove_head();
+        arrMagistrados[cont2]->pilha->insert_head(p);
+
+        if(cont1 == numEmpresas-1) {
+            cont1 = 0;
+        } else {
+            cont1++;
+        }
+
+        if(cont2 == m-1) {
+            cont2 = 0;
+        } else {
+            cont2++;
         }
     }
 
 
-    for(int i = 0; i < numEmpresas; i++) {
-        arrFilas[i]->print();
+    for(int i = 0; i < m; i++) {
+        arrMagistrados[i]->pilha->print();
     }
-
 
     return 0;
 }
