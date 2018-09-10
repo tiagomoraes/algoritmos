@@ -60,12 +60,13 @@ struct Lista {
         this->size++;
     }
 
-    arquivo* remove(string nome) {
+    /*
+    arquivo* remove(int id) {
         nodePtr cur;
         cur = this->head;
 
         while(cur != nullptr) {
-            if(cur->val->nome == nome) {
+            if(cur->val->id == id) {
                 if(cur->next != nullptr) {
                     cur->next->prev = cur->prev;
                 } else {
@@ -85,6 +86,27 @@ struct Lista {
                     cur = cur->next;
                 } else {
                     return nullptr;
+                }
+            }
+        }
+    }
+    */
+
+    int pos(string nome) {
+        nodePtr cur;
+        cur = this->head;
+
+        int resp = 1;
+
+        while(cur != nullptr) {
+            if(cur->val->nome == nome) {
+                return resp;
+            } else {
+                if(cur->next != nullptr) {
+                    cur = cur->next;
+                    resp++;
+                } else {
+                    return -1;
                 }
             }
         }
@@ -125,9 +147,6 @@ struct hash_table {
         }
     }
 
-    void rehash() {
-    }
-
     int hash_generate(string nome) {
         int key = 0;
 
@@ -144,9 +163,16 @@ struct hash_table {
         table[hash_code]->insert_tail(val);
     }
 
+    /*
     arquivo* remove(string nome) {
         int hash_code = hash_generate(nome);
         return table[hash_code]->remove(nome);
+    }
+    */
+
+    int pos(string nome) {
+        int hash_code = hash_generate(nome);
+        return table[hash_code]->pos(nome);
     }
 
     void print() {
@@ -162,38 +188,42 @@ int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    /*
-    Lista *a = new Lista();
-    arquivo *f1 = new arquivo("Arquivo 1", 11);
-    arquivo *f2 = new arquivo("Arquivo 2", 22);
-    arquivo *f3 = new arquivo("Arquivo 3", 33);
-    arquivo *f4 = new arquivo("Arquivo 4", 44);
+    int numArquivos, idIn, quantGavetas, numTransf, idTransf, quantConsult;
+    string nomeIn, nomeConsult;
 
-    a->insert_tail(f1);
-    a->insert_tail(f2);
-    a->insert_tail(f3);
-    a->insert_tail(f4);
+    cin >> numArquivos;
 
-    a->remove("Arquivo 2");
-    a->remove("Arquivo 3");
-    a->remove("Arquivo");
+    arquivo *arquivosAntigos[numArquivos];
 
-    a->print();
-    */
+    for(int i = 0; i < numArquivos; i++) {
+        cin >> nomeIn;
+        cin >> idIn;
+        arquivosAntigos[i] = new arquivo(nomeIn, idIn);
+    }
 
-    arquivo *f1 = new arquivo("Arquivo 1", 11);
-    arquivo *f2 = new arquivo("Arquivo 2", 22);
-    arquivo *f3 = new arquivo("Arquivo 3", 33);
-    arquivo *f4 = new arquivo("Arquivo 4", 44);
+    cin >> quantGavetas;
+    hash_table *gavetas = new hash_table(quantGavetas);
 
-    hash_table *a = new hash_table(10);
+    cin >> numTransf;
 
-    a->insert(f1);
-    a->insert(f2);
-    a->insert(f3);
-    a->remove("Arquivo 2");
-    a->print();
+    for(int i = 0; i < numTransf; i++) {
+        cin >> idTransf;
+        for(int j = 0; j < numArquivos; j++) {
+            if(arquivosAntigos[j]->id == idTransf) {
+                gavetas->insert(arquivosAntigos[j]);
+            }
+        }
+    }
 
+    for(int i = 0; i < quantGavetas; i++) {
+        cout << i << ": " << gavetas->table[i]->size << endl;
+    }
+
+    cin >> quantConsult;
+    for(int i = 0; i < quantConsult; i++) {
+        cin >> nomeConsult;
+        cout << i << ": " << gavetas->pos(nomeConsult) << endl;
+    }
 
     return 0;
 };
