@@ -3,6 +3,7 @@
 
 using namespace std;
 
+// struct cointaining the name and id of the arquivo
 struct arquivo {
     string nome;
     int id;
@@ -14,6 +15,7 @@ struct arquivo {
     }
 };
 
+// default linked_list struct (for the hash_table lists)
 struct Lista {
     struct node {
         arquivo *val;
@@ -22,7 +24,6 @@ struct Lista {
 
         node(arquivo *val) {
             this->val = val;
-            this->prev = nullptr;
             this->next = nullptr;
         }
     };
@@ -35,7 +36,7 @@ struct Lista {
     nodePtr tail;
     nodePtr cur;
 
-    // constructor for the class
+    // constructor for the Lista
     Lista() {
         head = nullptr;
         tail = nullptr;
@@ -53,100 +54,62 @@ struct Lista {
             this->head = n;
         } else {
             this->tail->next = n;
-            n->prev = this->tail;
         }
         this->tail = n;
 
         this->size++;
     }
 
-    /*
-    arquivo* remove(int id) {
-        nodePtr cur;
-        cur = this->head;
-
-        while(cur != nullptr) {
-            if(cur->val->id == id) {
-                if(cur->next != nullptr) {
-                    cur->next->prev = cur->prev;
-                } else {
-                    this->tail = cur->prev;
-                }
-
-                if(cur->prev != nullptr) {
-                    cur->prev->next = cur->next;
-                } else {
-                    this->head = cur->next;
-                }
-                this->size--;
-                return cur->val;
-
-            } else {
-                if(cur->next != nullptr) {
-                    cur = cur->next;
-                } else {
-                    return nullptr;
-                }
-            }
-        }
-    }
-    */
-
+    // returns the position of some element based on the name
     int pos(string nome) {
         nodePtr cur;
         cur = this->head;
 
-        int resp = 1;
+        int resp = 1; // first position is 1, not 0...
 
         while(cur != nullptr) {
+            // if founds the elemnt
             if(cur->val->nome == nome) {
                 return resp;
             } else {
+                // if has next element
                 if(cur->next != nullptr) {
                     cur = cur->next;
                     resp++;
                 } else {
+                    // return -1 for not found
                     return -1;
                 }
             }
         }
     }
 
-    void print() {
-        nodePtr cur;
-        cur = this->head;
-        nodePtr aux;
-        cout << "Printing list" << endl;
-        cout << "Size: " << this->size << endl << endl;
-        while(cur != nullptr) {
-            cout << "arquivo" << endl;
-            cout << "nome: " << cur->val->nome << endl;
-            cout << "id: " << cur->val->id << endl;
-            cur = cur->next;
-        }
-    }
-
+    // just returns the length of the Lista
     int length() {
         return this->size;
     }
 };
 
+// hash_table struct (doesn't have the rehashin function, however it is simple to add, just creating a new hash_table)
 struct hash_table {
 
-    int filled;
+    // int filled; (would use for seeing the 'capacidade de carga')
     int size;
     Lista **table;
 
+    // constructor for the hash_table
     hash_table(int size) {
-        this->filled = 0;
+        // this->filled = 0;
         this->size = size;
         this->table = new Lista*[this->size];
 
+        // sets each table position as a new Lista;
         for(int i = 0; i < this->size; i++) {
             table[i] = new Lista();
         }
     }
 
+    // gets the file name and returns the hash_code
     int hash_generate(string nome) {
         int key = 0;
 
@@ -158,29 +121,16 @@ struct hash_table {
         return resp;
     }
 
+    // inserts an arquivo on its tabe position in the end of the Lista
     void insert(arquivo *val) {
         int hash_code = hash_generate(val->nome);
         table[hash_code]->insert_tail(val);
     }
 
-    /*
-    arquivo* remove(string nome) {
-        int hash_code = hash_generate(nome);
-        return table[hash_code]->remove(nome);
-    }
-    */
-
+    // returns the position (based on the Lista pos() function)
     int pos(string nome) {
         int hash_code = hash_generate(nome);
         return table[hash_code]->pos(nome);
-    }
-
-    void print() {
-        for(int i = 0; i < size; i++) {
-            cout << "Bucket[" << i << "]:" << endl;
-            table[i]->print();
-            cout << "----------------------" << endl;
-        }
     }
 };
 
@@ -195,17 +145,21 @@ int main(int argc, char *argv[]) {
 
     arquivo *arquivosAntigos[numArquivos];
 
+    // fills an array with all the initila arquivos
     for(int i = 0; i < numArquivos; i++) {
         cin >> nomeIn;
         cin >> idIn;
         arquivosAntigos[i] = new arquivo(nomeIn, idIn);
     }
 
+    // creates a hash_table qithe the desired size (number of gavetas)
     cin >> quantGavetas;
     hash_table *gavetas = new hash_table(quantGavetas);
 
     cin >> numTransf;
 
+    // transfers the arquivos for their gavetas based on its names
+    // --------- Como etá ordenado, implementar uma busca binária para achar o arquivo correto -----------
     for(int i = 0; i < numTransf; i++) {
         cin >> idTransf;
         for(int j = 0; j < numArquivos; j++) {
@@ -215,10 +169,12 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // prints the amount of arquivos on each gaveta
     for(int i = 0; i < quantGavetas; i++) {
         cout << i << ": " << gavetas->table[i]->size << endl;
     }
 
+    // prints the position of the arquivos based on their nomes
     cin >> quantConsult;
     for(int i = 0; i < quantConsult; i++) {
         cin >> nomeConsult;
