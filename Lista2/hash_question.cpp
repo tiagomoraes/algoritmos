@@ -162,9 +162,20 @@ int main(int argc, char *argv[]) {
     // --------- Como etá ordenado, implementar uma busca binária para achar o arquivo correto -----------
     for(int i = 0; i < numTransf; i++) {
         cin >> idTransf;
-        for(int j = 0; j < numArquivos; j++) {
-            if(arquivosAntigos[j]->id == idTransf) {
-                gavetas->insert(arquivosAntigos[j]);
+
+        int l, r, m;
+        l = 0;
+        r = numArquivos-1;
+
+        while(l <= r) {
+            m = floor((l+r)/2);
+            if(idTransf == arquivosAntigos[m]->id) {
+                gavetas->insert(arquivosAntigos[m]);
+                break;
+            } else if(idTransf < arquivosAntigos[m]->id) {
+                r = m-1;
+            } else {
+                l = m+1;
             }
         }
     }
