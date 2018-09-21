@@ -42,6 +42,23 @@ struct segment_tree {
             return min(this->left->RMQ(max(a,this->l), min(b,h)), this->right->RMQ(max(a,h+1), min(b,this->r)));
         }
     }
+
+    void print(int a, int b) {
+        // percorrer a árvore toda em pós ordem e printar apenas os valores que tiverem algu valor do meu intervalo
+        if(a > b || a > this->r || b < this->l) {
+            return;
+        } else if(a == this->l && b == this->r) {
+            cout << this->m << " ";
+            return;
+        } else {
+            int h = floor((this->l+this->r)/2);
+            this->left->print(max(a,this->l), min(b,h));
+            this->right->print(max(a,h+1), min(b,this->r));
+            return;
+        }
+    }
+
+
 };
 
 typedef struct segment_tree* stPtr;
@@ -78,7 +95,13 @@ int main(int argc, char *argv[]) {
             cin >> l;
             cin >> r;
             cout << st->RMQ(l, r) << endl;
-        } else if(command == "END"){
+        } else if(command == "PRT"){
+            int a, b;
+            cin >> a;
+            cin >> b;
+            st->print(a, b);
+            cout << endl;
+        } else {
             end = true;
         }
     }
