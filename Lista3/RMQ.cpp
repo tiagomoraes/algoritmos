@@ -24,8 +24,12 @@ struct segment_tree {
         }
     }
 
-    virtual ~segment_tree() {
-        
+    void destroyRecursive() {
+        if(this) {
+            this->left->destroyRecursive();
+            this->right->destroyRecursive();
+            delete this;
+        }
     }
 
     int RMQ(int a, int b) {
@@ -74,7 +78,7 @@ int main(int argc, char *argv[]) {
             cin >> l;
             cin >> r;
             cout << st->RMQ(l, r) << endl;
-        } else {
+        } else if(command == "END"){
             end = true;
         }
     }
