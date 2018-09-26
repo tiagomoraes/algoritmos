@@ -70,7 +70,17 @@ struct segment_tree {
                 cout << this->m << " ";
             }
         }
+    }
 
+    void updateParents() {
+        segment_tree* cur;
+        cur = this;
+        int min = this->m;
+        while(cur->father != nullptr) {
+            if(cur->father->left != nullptr) {
+                cur->father->m = min(min, )
+            }
+        }
     }
 };
 
