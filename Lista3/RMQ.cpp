@@ -74,12 +74,16 @@ struct segment_tree {
 
     void updateParents() {
         segment_tree* cur;
-        cur = this;
-        int min = this->m;
-        while(cur->father != nullptr) {
-            if(cur->father->left != nullptr) {
-                cur->father->m = min(min, )
+        cur = this->father;
+        while(cur != nullptr) {
+            if(cur->left && cur->right) {
+                cur->m = min(cur->left->m, cur->right->m);
+            } else if(cur->left) {
+                cur->m = cur->left->m;
+            } else {
+                cur->m = cur->right->m;
             }
+            cur = cur->father;
         }
     }
 };
@@ -119,6 +123,7 @@ int main(int argc, char *argv[]) {
 
     stPtr st = new segment_tree(sensores, 0, numSensores-1);
 
+    fillLeaves(st);
 
     bool end = false;
     string command;
@@ -129,9 +134,8 @@ int main(int argc, char *argv[]) {
             int i, x;
             cin >> i;
             cin >> x;
-            sensores[i] = x;
-            stPtr aux = st;
-            st = new segment_tree(sensores, 0, numSensores-1);
+            leaves[i]->m = x;
+            leaves[i]->updateParents();
         } else if(command == "RMQ") {
             int l, r;
             cin >> l;
@@ -147,13 +151,6 @@ int main(int argc, char *argv[]) {
             end = true;
         }
     }
-
-    fillLeaves(st);
-
-    for(int i = 0; i < numSensores; i++) {
-        cout << ::leaves[i]->father->l << "|" << ::leaves[i]->father->r << endl;
-    }
-
 
     return 0;
 }
