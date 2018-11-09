@@ -1,4 +1,4 @@
-/snap/clion/39/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" "/home/tiago/UFPE/Algoritmos - IF672cc/algoritmos/debug"
+/snap/clion/44/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" "/home/tiago/UFPE/Algoritmos - IF672cc/algoritmos/debug"
 -- The C compiler identification is GNU 7.3.0
 -- The CXX compiler identification is GNU 7.3.0
 -- Check for working C compiler: /usr/bin/cc
